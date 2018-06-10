@@ -16,6 +16,7 @@
 - "Better C" を目指した言語
 - C++/Go/関数型 を混ぜた感じ
 - 強力なテンプレート(ジェネリクス)
+- mutable/immutable
 - 型推論もあるよ
 
 ---
@@ -56,37 +57,45 @@ void main()
 
 https://run.dlang.io/is/8kRVWl
 ```
-import std.stdio;
+auto array = [ 1, 3, 5, 7, 9 ];
 
-void main()
-{
-    auto array = [ 1, 3, 5, 7, 9 ];
-    
-    writeln(array);
-    writeln(array[1]);     // 3
-    writeln(array[1..4]);  // [3, 5, 7]
-    writeln(array.length); // 5
+writeln(array);
+writeln(array[1]);     // 3
+writeln(array[1..4]);  // [3, 5, 7]
+writeln(array.length); // 5
 }
 ```
 
 ---
 
 ## 🍱 連想配列
-https://run.dlang.io/is/8kRVWl
+https://run.dlang.io/is/ujCFas
 ```
-import std.stdio;
+// int[string]
+auto map = ["a" : 1, "b" : 2];
 
-void main()
-{
-    // int[string]
-    auto map = ["a" : 1, "b" : 2];
-    
-    writeln(map);
-    writeln(map["a"]); // 1
-    writeln(map.length); // 2
-    writeln(map.keys); // ["b", "a"]
-    writeln(map.values); // [2, 1]
-}
+writeln(map);
+writeln(map["a"]); // 1
+writeln(map.length); // 2
+writeln(map.keys); // ["b", "a"]
+writeln(map.values); // [2, 1]
+```
+
+---
+
+## 🍱 immutable
+https://run.dlang.io/is/xhoF14
+```
+immutable int a = 5;
+a = 10; // Error
+
+immutable(int)[] b = [1, 2, 3];
+b = [2, 4, 6]; // Pass
+b[1] = 5; // Error
+
+immutable(int[]) c = [1, 2, 3];
+c = [2, 4, 6]; // Error
+c[1] = 5; // Error
 ```
 
 ---?code=sample/go/server.go&lang=golang&title=Golang File
