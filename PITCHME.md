@@ -53,7 +53,7 @@ void main()
 
 ---
 
-## 🍱 配列(スライス)
+## 🧀 配列(スライス)
 
 https://run.dlang.io/is/8kRVWl
 ```
@@ -68,7 +68,7 @@ writeln(array.length); // 5
 
 ---
 
-## 🍱 連想配列
+## 🗺️ 連想配列
 https://run.dlang.io/is/ujCFas
 ```
 // int[string]
@@ -83,7 +83,7 @@ writeln(map.values); // [2, 1]
 
 ---
 
-## 🍱 immutable
+## 🔓 immutable
 https://run.dlang.io/is/xhoF14
 ```
 immutable int a = 5;
@@ -97,6 +97,40 @@ immutable(int[]) c = [1, 2, 3];
 c = [2, 4, 6]; // Error
 c[1] = 5; // Error
 ```
+
+---
+
+## 🔓 immutable
+https://run.dlang.io/is/xhoF14
+```
+immutable int a = 5;
+a = 10; // Error
+
+immutable(int)[] b = [1, 2, 3];
+b = [2, 4, 6]; // Pass
+b[1] = 5; // Error
+
+immutable(int[]) c = [1, 2, 3];
+c = [2, 4, 6]; // Error
+c[1] = 5; // Error
+```
+
+---
+
+## 🈴 unittest
+https://run.dlang.io/is/OynfBn
+```
+int addOne(int a) {
+    return a+1;
+}
+
+unittest {
+    assert(addOne(-1) == 0);
+    assert(addOne(0) == 1);
+    assert(addOne(1) == 1); // AssertError
+}
+```
+
 
 ---?code=sample/go/server.go&lang=golang&title=Golang File
 
