@@ -16,18 +16,13 @@
 - "Better C" を目指した言語
 - C++/Go/関数型 を混ぜた感じ
 - 強力なテンプレート(ジェネリクス)
-- mutable/immutable
-- 型推論もあるよ
-
----
-
-## D言語: dlang とは
-
+- ガベージコレクション
+- immutable
+- 型推論
 - 組み込み機能が多い
   - 単体テスト
   - 契約プログラミング
-  - マクロっぽいやつ
-
+  - マクロ的なやつ
 ---
 
 # コード例で紹介
@@ -35,7 +30,7 @@ https://run.dlang.io/
 
 ---
 
-## 🍩 Hello World
+## ☀️ Hello World
 
 https://run.dlang.io/is/hROZGN
 ```D
@@ -50,10 +45,13 @@ void main()
     writeln(hello);
 }
 ```
+- 変数宣言の形はC系
+- 型の代わりに `auto` で型推論
+- 定数(const)も型推論
 
 ---
 
-## 🧀 配列(スライス)
+## 🧀 slices / 配列
 
 https://run.dlang.io/is/8kRVWl
 ```D
@@ -64,10 +62,10 @@ writeln(array[1]);     // 3
 writeln(array[1..4]);  // [3, 5, 7]
 writeln(array.length); // 5
 ```
-
+- 1..4 みたいな `Range` 表現もできる
 ---
 
-## 🗺️ 連想配列
+## 🗺️ associative array / 連想配列
 https://run.dlang.io/is/ujCFas
 ```D
 // int[string]
@@ -82,24 +80,65 @@ writeln(map.values); // [2, 1]
 
 ---
 
-## 🔓 immutable
-https://run.dlang.io/is/xhoF14
+## ⚙️ function type
+https://run.dlang.io/is/420oGB
 ```D
-immutable int a = 5;
-a = 10; // Error
+int function(int) f1 = function(x){ return x+1; };
+auto f2 = function(int x){ return x+1; }; // 型推論
+auto f3 = (int x) => x+1; // 型推論 + ラムダ式
 
-immutable(int)[] b = [1, 2, 3];
-b = [2, 4, 6]; // Pass
-b[1] = 5; // Error
-
-immutable(int[]) c = [1, 2, 3];
-c = [2, 4, 6]; // Error
-c[1] = 5; // Error
+writeln(f1(0)); // 1
+writeln(f2(0)); // 1
+writeln(f3(0)); // 1
 ```
+- 関数を変数に入れて使ったりするやつ
+- lambda syntax も使える
+---
+
+## 🔐️ immutable / 不変
+https://run.dlang.io/is/eUouXZ
+```D
+    immutable int a = 5;
+    a = 10; // Error
+    const int b = 5;
+    b = 10; // Error
+    
+    immutable(int)[] c = [1, 2, 3];
+    c[1] = 5; // Error
+    c = [2, 4, 6]; // Pass
+    
+    immutable int[] d = [1, 2, 3];
+    d[1] = 5; // Error
+    d = [2, 4, 6]; // Error
+```
+- 型のオプションとして `immutable` がある感じ
+- `const` は スコープに働くimmutable
+    - `const(int)[] x` はできない
 
 ---
 
-## ✅ unittest
+## 👽 alias
+https://run.dlang.io/is/HuWybU
+```D
+import std.stdio;
+
+void main()
+{
+    alias im_int = immutable int;
+    im_int a = 5;
+    alias b = a;
+    
+    alias println = std.stdio.writeln;
+    println(b); // 5
+    b = 10; // Error
+}
+```
+- 色々なものに別名を付けることができる
+- 関数の型表現に使うとすっきり
+
+---
+
+## ✅ unittest / 単体テスト
 https://run.dlang.io/is/OynfBn
 ```D
 int addOne(int a) {
@@ -112,3 +151,52 @@ unittest {
     assert(addOne(1) == 1); // AssertError
 }
 ```
+- コンパイル時のオプションに -unittest を付ける
+- 関数単位で、すぐ近くにテストコードを書く
+
+---
+
+## 🛡️ Contract / 契約プログラミング
+https://run.dlang.io/is/omSAeG
+```D
+int divide(int a, int b)
+in{ // 入力条件
+    assert(b != 0);
+}
+do{
+    return a / b;
+}
+
+writeln(divide(10, 2));
+writeln(divide(10, 0)); // AssertError
+```
+- 関数の引数・結果に対して検証をかける
+- チェック部分のコードが綺麗に分離できる
+- `out(result){ ... }` で出力の検証もできる
+
+---
+
+## 🛡️ Contract / 契約プログラミング
+https://run.dlang.io/is/Yzctsq
+```D
+class Date{
+    private int year, month, day;
+    this(int y, int m, int d){
+        year=y; month=m; day=d; // 雑な実装
+    }
+    void addDays(int d){
+        day += d; // 雑な実装
+    }
+    invariant{ // 不変条件
+        assert(1 <= year && year <= 9999);
+        assert(1 <= month && month <= 12);
+        assert(1 <= day && day <= 31);
+    }
+}
+
+auto date1 = new Date(2018, 06, 13);
+date1.addDays(30); // AssertError
+auto date2 = new Date(2018, 16, 13); // AssertError
+```
+- クラスの状態（メンバ変数の値）に対して検証をかける
+- 継承先に対しても有効
