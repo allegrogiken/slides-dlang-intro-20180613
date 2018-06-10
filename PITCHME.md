@@ -30,12 +30,13 @@
 ---
 
 # コード例で紹介
+https://run.dlang.io/
 
 ---
 
 ## 🍩 Hello World
 
-###### https://run.dlang.io/is/hROZGN
+https://run.dlang.io/is/hROZGN
 ```
 import std.stdio;
 
@@ -51,15 +52,40 @@ void main()
 
 ---
 
-## とりあえずコード
+## 🍱 配列(スライス)
 
-🍩 配列と連想配列
-
+https://run.dlang.io/is/8kRVWl
 ```
 import std.stdio;
+
 void main()
 {
-    writeln("Hello D");
+    auto array = [ 1, 3, 5, 7, 9 ];
+    
+    writeln(array);
+    writeln(array[1]);     // 3
+    writeln(array[1..4]);  // [3, 5, 7]
+    writeln(array.length); // 5
+}
+```
+
+---
+
+## 🍱 連想配列
+https://run.dlang.io/is/8kRVWl
+```
+import std.stdio;
+
+void main()
+{
+    // int[string]
+    auto map = ["a" : 1, "b" : 2];
+    
+    writeln(map);
+    writeln(map["a"]); // 1
+    writeln(map.length); // 2
+    writeln(map.keys); // ["b", "a"]
+    writeln(map.values); // [2, 1]
 }
 ```
 
