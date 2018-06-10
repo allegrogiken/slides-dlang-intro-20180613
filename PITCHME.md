@@ -1,12 +1,12 @@
-# Black
+# なんでも入ってる！D言語のご紹介
 
-### A GitPitch Presentation Template
+### allegrogiken @ 2018-06-13 大正GeekNight
 
 ---
 
-## Tips!
+## スライドの趣旨
 
-<br>
+- 学習用に向けて D言語を紹介する
 
 @fa[arrows gp-tip](Press F to go Fullscreen)
 
@@ -14,14 +14,49 @@
 
 ---
 
-## Template Features
+## D言語: dlang とは
 
-- Code Presenting |
-- Repo Source, Static Blocks, GIST |
-- Custom CSS Styling |
-- Slideshow Background Image |
-- Slide-specific Background Images |
-- Custom Logo, TOC, and Footnotes |
+- "Better C" を目指した言語
+- C++ と Go に関数型スパイス を混ぜたような雰囲気
+- 強力なテンプレート(ジェネリクス)
+- 型推論もあるよ
+- 組み込み機能が多い
+  - 単体テスト
+  - 契約プログラミング
+  - マクロっぽいやつ
+
+---
+
+## とりあえずコード
+
+🍩 Hello World
+
+```
+import std.stdio;
+
+void main()
+{
+    // string hello = "Hello D World!";
+    // auto hello = "Hello D World!";
+    const hello = "Hello D World!";
+
+    writeln(hello);
+}
+```
+
+---
+
+## とりあえずコード
+
+🍩 配列と連想配列
+
+```
+import std.stdio;
+void main()
+{
+    writeln("Hello D");
+}
+```
 
 ---?code=sample/go/server.go&lang=golang&title=Golang File
 
