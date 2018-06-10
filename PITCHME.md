@@ -1,16 +1,13 @@
-# なんでも入ってる！D言語のご紹介
+## なんでも入ってる！D言語のご紹介
 
-### allegrogiken @ 2018-06-13 大正GeekNight
+#### allegrogiken @ 2018-06-13 大正GeekNight
 
 ---
 
 ## スライドの趣旨
 
 - 学習用に向けて D言語を紹介する
-
-@fa[arrows gp-tip](Press F to go Fullscreen)
-
-@fa[microphone gp-tip](Press S for Speaker Notes)
+- 私のプログラマー人生に大きく影響したD言語に関心を持ってもらう
 
 ---
 
