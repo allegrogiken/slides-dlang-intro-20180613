@@ -63,7 +63,6 @@ writeln(array);
 writeln(array[1]);     // 3
 writeln(array[1..4]);  // [3, 5, 7]
 writeln(array.length); // 5
-}
 ```
 
 ---
