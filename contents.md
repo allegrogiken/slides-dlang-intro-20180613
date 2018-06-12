@@ -81,21 +81,23 @@ writeln(map.values); // [2, 1]
 ---
 
 ## ⚙️ function type
-https://run.dlang.io/is/420oGB
+https://run.dlang.io/is/VXxjDl
 ```D
-int function(int) f1 = function(x){ return x+1; };
-auto f2 = function(int x){ return x+1; }; // 型推論
-auto f3 = (int x) => x+1; // 型推論 + ラムダ式
+const int function(int) f1 = function(int x){ return x+1; };
+const f2 = function(int x){ return x+1; }; // 型推論
+const f3 = (int x){ return x+1; }; // `function` 省略形
+const f4 = (int x) => x+1; // ラムダ式
 
 writeln(f1(0)); // 1
 writeln(f2(0)); // 1
 writeln(f3(0)); // 1
+writeln(f4(0)); // 1
 ```
-- 関数を変数に入れて使ったりするやつ
+- 関数が第一級オブジェクト
 - lambda syntax も使える
 ---
 
-## ⚙️ OOP / オブジェクト指向
+## 🗿 OOP / オブジェクト指向
 https://run.dlang.io/is/420oGB
 ```D
 interface Animal{ void bark(); }
@@ -136,6 +138,7 @@ https://run.dlang.io/is/eUouXZ
 - 型のオプションとして `immutable` がある感じ
 - `const` は スコープに働くimmutable
     - `const(int)[] x` はできない
+- 定数としては `enum a = 5;` が向いている
 
 ---
 
@@ -199,53 +202,125 @@ writeln(divide(10, 0)); // AssertError
 ---
 
 ## 🛡️ Contract / 契約プログラミング
-https://run.dlang.io/is/Yzctsq
+https://run.dlang.io/is/KqIK6Y
 ```D
-class Date{
-    private int year, month, day;
-    this(int y, int m, int d){
-        year=y; month=m; day=d; // 雑な実装
-    }
-    void addDays(int d){
-        day += d; // 雑な実装
-    }
+class Person{
+    private string m_name;
+    @property string name(string name){ return m_name = name; }
+    this(string name){ m_name = name; }
     invariant{ // 不変条件
-        assert(1 <= year && year <= 9999);
-        assert(1 <= month && month <= 12);
-        assert(1 <= day && day <= 31);
+        assert(m_name!=null);
     }
 }
 
-auto date1 = new Date(2018, 06, 13);
-date1.addDays(30); // AssertError
-auto date2 = new Date(2018, 16, 13); // AssertError
+auto person = new Person("Taro");
+person.name = null; // AssertError
+new Person(null); // AssertError
 ```
 - クラスの状態（メンバ変数の値）に対して検証をかける
-- 継承先に対しても有効
+- メンバ関数の実行前後で検証
 
 ---
 
-## やってみたくなったら
-https://run.dlang.io/is/Yzctsq
+## 🎨 generics / ジェネリクス
+https://run.dlang.io/is/VO9d5I
 ```D
-class Date{
-    private int year, month, day;
-    this(int y, int m, int d){
-        year=y; month=m; day=d; // 雑な実装
-    }
-    void addDays(int d){
-        day += d; // 雑な実装
-    }
-    invariant{ // 不変条件
-        assert(1 <= year && year <= 9999);
-        assert(1 <= month && month <= 12);
-        assert(1 <= day && day <= 31);
-    }
+class valuePrinter(T){
+    T value;
+    this(T value){ this.value = value; }
+    void print(){ writeln("value: ", value); }
 }
 
-auto date1 = new Date(2018, 06, 13);
-date1.addDays(30); // AssertError
-auto date2 = new Date(2018, 16, 13); // AssertError
+void main(){
+    new valuePrinter!string("Taro").print(); // value: Taro
+    new valuePrinter!int(5).print(); // value: 5
+}
 ```
-- クラスの状態（メンバ変数の値）に対して検証をかける
-- 継承先に対しても有効
+- 機能としては「テンプレート」をクラスに適用した例
+- 型パラメータは `!` の後に渡す
+- 複数の型パラメータも渡せる
+    - `sample(T,S){ ... }`
+    - `sample!(int, string)`
+
+---
+
+## 🎨 generics / ジェネリクス
+https://run.dlang.io/is/jb0poZ
+```D
+T square(T)(T t){
+  return t*t;
+}
+
+void main(){
+	writeln(square!int(4)); // 16
+	writeln(square(4)); // 16
+	writeln(square(1.5)); // 2.25
+    
+    writeln(4.square()); // 16 UFCSとの組み合わせ
+    writeln(1.5.square()); //2.25
+    
+	// writeln(square("A")); // Compile Error
+}
+```
+- 関数にテンプレートを適用した例
+- 型パラメータが推測できるので `!` もろとも省略できる
+- 第一引数の型にメソッドが生えたように使える `UFCS` と組み合わせると強力
+- `string` は * 演算子が使えないのでコンパイルエラー
+
+---
+
+## 🔯 mixin / ミクスイン
+https://run.dlang.io/is/isxhl8
+```D
+template singleValuePrinter(T){
+    T name;
+    this(T name){ this.name = name; }
+    void print(){ writeln("value: ", name); }
+}
+class stringValuePrinter{
+    mixin singleValuePrinter!(string);
+}
+class intValuePrinter{
+    mixin singleValuePrinter!(int);
+}
+
+void main(){
+    new stringValuePrinter("Taro").print(); // value: Taro
+    new intValuePrinter(5).print(); // value: 5
+}
+```
+- PHPのtraitみたいなやつ（テンプレート実装を各所に展開）
+- 型パラメータを与えつつ展開できる
+
+---
+
+## 🕸️ Web Framework (vibe.d)
+http://code.dlang.org/packages/vibe-d
+```D
+import vibe.vibe;
+
+void main()
+{
+	auto settings = new HTTPServerSettings;
+	settings.port = 8080;
+	settings.bindAddresses = ["::1", "127.0.0.1"];
+	listenHTTP(settings, &hello);
+	runApplication();
+}
+
+void hello(HTTPServerRequest req, HTTPServerResponse res)
+{
+	res.writeBody("Hello, World!");
+}
+```
+- node/express に近そうな感じ
+
+---
+
+## やってみたくなった?
+#### D言語基礎文法最速マスター
+https://gist.github.com/repeatedly/2470712  
+綺麗にまとまっているgist
+#### DLang Tour
+https://tour.dlang.org/tour/ja/welcome/welcome-to-d  
+公式のハンズオン ブラウザのみで試せる
