@@ -95,6 +95,28 @@ writeln(f3(0)); // 1
 - lambda syntax も使える
 ---
 
+## ⚙️ OOP / オブジェクト指向
+https://run.dlang.io/is/420oGB
+```D
+interface Animal{ void bark(); }
+
+class Dog : Animal{
+    void bark(){ writeln("waon!"); }
+}
+class Cat : Animal{
+    void bark(){ writeln("meow-"); }
+}
+
+void main(){
+    auto animals = cast(Animal[])[ new Dog(), new Cat() ];
+    animals[0].bark(); // waon!
+    animals[1].bark(); // meow-
+}
+```
+- Javaに近いOOP（Classは単一継承、Interfaceは複実装可）
+- 全てのClassは `Object` クラスのサブクラス
+---
+
 ## 🔐️ immutable / 不変
 https://run.dlang.io/is/eUouXZ
 ```D
@@ -177,6 +199,33 @@ writeln(divide(10, 0)); // AssertError
 ---
 
 ## 🛡️ Contract / 契約プログラミング
+https://run.dlang.io/is/Yzctsq
+```D
+class Date{
+    private int year, month, day;
+    this(int y, int m, int d){
+        year=y; month=m; day=d; // 雑な実装
+    }
+    void addDays(int d){
+        day += d; // 雑な実装
+    }
+    invariant{ // 不変条件
+        assert(1 <= year && year <= 9999);
+        assert(1 <= month && month <= 12);
+        assert(1 <= day && day <= 31);
+    }
+}
+
+auto date1 = new Date(2018, 06, 13);
+date1.addDays(30); // AssertError
+auto date2 = new Date(2018, 16, 13); // AssertError
+```
+- クラスの状態（メンバ変数の値）に対して検証をかける
+- 継承先に対しても有効
+
+---
+
+## やってみたくなったら
 https://run.dlang.io/is/Yzctsq
 ```D
 class Date{
